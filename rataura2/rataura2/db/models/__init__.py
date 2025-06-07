@@ -8,13 +8,13 @@ from rataura2.db.models.agent import (
     Tool, 
     Transition,
     TransitionConditionType,
-    MetaAgent,
+    Conversation,
     LLMProvider,
     STTProvider,
     TTSProvider,
     AgentSchema,
     ToolSchema,
     TransitionSchema,
-    MetaAgentSchema,
+    ConversationSchema,
 )
 

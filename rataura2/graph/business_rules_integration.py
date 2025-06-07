@@ -46,16 +46,16 @@ class BusinessRulesAgentGraphManager(AgentGraphManager):
         return super().check_transitions(agent_id, context)
 
 
-def create_business_rules_graph_manager(meta_agent_id: int, db: Session) -> BusinessRulesAgentGraphManager:
+def create_business_rules_graph_manager(conversation_id: int, db: Session) -> BusinessRulesAgentGraphManager:
     """
     Create a BusinessRulesAgentGraphManager.
     
     Args:
-        meta_agent_id: ID of the meta-agent to build the graph for
+        conversation_id: ID of the conversation to build the graph for
         db: SQLAlchemy database session
         
     Returns:
         BusinessRulesAgentGraphManager: A new graph manager instance with Business Rules support
     """
-    return BusinessRulesAgentGraphManager(meta_agent_id, db)
+    return BusinessRulesAgentGraphManager(conversation_id, db)
 

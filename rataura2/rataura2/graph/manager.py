@@ -6,7 +6,7 @@ import json
 import networkx as nx
 from sqlalchemy.orm import Session
 
-from rataura2.db.models import Agent, Transition, MetaAgent
+from rataura2.db.models import Agent, Transition, Conversation
 
 
 class AgentGraphManager:
@@ -16,18 +16,18 @@ class AgentGraphManager:
     of agents and their transitions.
     """
     
-    def __init__(self, meta_agent_id: int, db: Session):
+    def __init__(self, conversation_id: int, db: Session):
         """
         Initialize the graph manager.
         
         Args:
-            meta_agent_id: ID of the meta-agent to build the graph for
+            conversation_id: ID of the conversation to build the graph for
             db: SQLAlchemy database session
         """
-        self.meta_agent_id = meta_agent_id
+        self.conversation_id = conversation_id
         self.db = db
         self.graph = nx.DiGraph()
-        self.meta_agent = None
+        self.conversation = None
         self.agents = {}
         self.transitions = []
         
@@ -36,16 +36,16 @@ class AgentGraphManager:
     
     def _build_graph(self) -> None:
         """Build the directed graph from the database."""
-        # Get the meta-agent
-        self.meta_agent = self.db.query(MetaAgent).filter(MetaAgent.id == self.meta_agent_id).first()
-        if not self.meta_agent:
-            raise ValueError(f"Meta-agent with ID {self.meta_agent_id} not found")
+        # Get the conversation
+        self.conversation = self.db.query(Conversation).filter(Conversation.id == self.conversation_id).first()
+        if not self.conversation:
+            raise ValueError(f"Conversation with ID {self.conversation_id} not found")
         
-        # Get all agents associated with this meta-agent
+        # Get all agents associated with this conversation
         agents = self.db.query(Agent).join(
-            MetaAgent.agents
+            Conversation.agents
         ).filter(
-            MetaAgent.id == self.meta_agent_id
+            Conversation.id == self.conversation_id
         ).all()
         
         # Add agents as nodes
@@ -81,15 +81,15 @@ class AgentGraphManager:
     
     def get_initial_agent(self) -> Agent:
         """
-        Get the initial agent for the meta-agent.
+        Get the initial agent for the conversation.
         
         Returns:
             Agent: The initial agent
         """
-        if not self.meta_agent:
-            raise ValueError("Meta-agent not loaded")
+        if not self.conversation:
+            raise ValueError("Conversation not loaded")
         
-        return self.agents.get(self.meta_agent.initial_agent_id)
+        return self.agents.get(self.conversation.initial_agent_id)
     
     def get_agent_transitions(self, agent_id: int) -> List[Dict[str, Any]]:
         """
@@ -290,7 +290,7 @@ class AgentGraphManager:
         nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels, font_size=8)
         
         # Set title
-        plt.title(f"Agent Transition Graph for {self.meta_agent.name}", size=15)
+        plt.title(f"Agent Transition Graph for {self.conversation.name}", size=15)
         
         # Remove axis
         plt.axis("off")
@@ -308,11 +308,11 @@ class AgentGraphManager:
             str: JSON representation of the graph
         """
         data = {
-            "meta_agent": {
-                "id": self.meta_agent.id,
-                "name": self.meta_agent.name,
-                "description": self.meta_agent.description,
-                "initial_agent_id": self.meta_agent.initial_agent_id
+            "conversation": {
+                "id": self.conversation.id,
+                "name": self.conversation.name,
+                "description": self.conversation.description,
+                "initial_agent_id": self.conversation.initial_agent_id
             },
             "nodes": [],
             "edges": []
@@ -358,8 +358,8 @@ class AgentGraphManager:
         data = json.loads(json_str)
         
         # Create a new instance
-        meta_agent_id = data["meta_agent"]["id"]
-        manager = cls(meta_agent_id, db)
+        conversation_id = data["conversation"]["id"]
+        manager = cls(conversation_id, db)
         
         # Clear the existing graph
         manager.graph.clear()

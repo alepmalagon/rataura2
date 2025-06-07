@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from livekit.agents import Agent as LivekitAgent
 from livekit.plugins import google, silero
 
-from rataura2.db.models import Agent, MetaAgent, Tool
+from rataura2.db.models import Agent, Conversation, Tool
 from rataura2.graph.manager import AgentGraphManager
 
 logger = logging.getLogger(__name__)
@@ -104,26 +104,26 @@ class AgentFactory:
         
         return livekit_agent
     
-    def create_meta_agent(self, meta_agent_id: int) -> "MetaAgentController":
+    def create_conversation(self, conversation_id: int) -> "ConversationController":
         """
-        Create a meta-agent controller from a database meta-agent model.
+        Create a conversation controller from a database conversation model.
         
         Args:
-            meta_agent_id: ID of the meta-agent to create
+            conversation_id: ID of the conversation to create
             
         Returns:
-            MetaAgentController: A meta-agent controller instance
+            ConversationController: A conversation controller instance
         """
-        # Get the meta-agent from the database
-        meta_agent = self.db.query(MetaAgent).filter(MetaAgent.id == meta_agent_id).first()
-        if not meta_agent:
-            raise ValueError(f"Meta-agent with ID {meta_agent_id} not found")
+        # Get the conversation from the database
+        conversation = self.db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        if not conversation:
+            raise ValueError(f"Conversation with ID {conversation_id} not found")
         
         # Create the graph manager
-        graph_manager = AgentGraphManager(meta_agent_id, self.db)
+        graph_manager = AgentGraphManager(conversation_id, self.db)
         
-        # Create the meta-agent controller
-        return MetaAgentController(meta_agent, graph_manager, self)
+        # Create the conversation controller
+        return ConversationController(conversation, graph_manager, self)
 
 
 class DynamicAgent(LivekitAgent):
@@ -159,25 +159,25 @@ class DynamicAgent(LivekitAgent):
         logger.info(f"Added tool {name} to agent")
 
 
-class MetaAgentController:
+class ConversationController:
     """
-    Controller for a meta-agent that manages transitions between agents.
+    Controller for a conversation that manages transitions between agents.
     """
     
-    def __init__(self, meta_agent: MetaAgent, graph_manager: AgentGraphManager, 
+    def __init__(self, conversation: Conversation, graph_manager: AgentGraphManager, 
                  factory: AgentFactory):
         """
-        Initialize the meta-agent controller.
+        Initialize the conversation controller.
         
         Args:
-            meta_agent: Meta-agent model
+            conversation: Conversation model
             graph_manager: Graph manager for agent transitions
             factory: Agent factory for creating Livekit agents
         """
-        self.meta_agent = meta_agent
+        self.conversation = conversation
         self.graph_manager = graph_manager
         self.factory = factory
-        self.current_agent_id = meta_agent.initial_agent_id
+        self.current_agent_id = conversation.initial_agent_id
         self.current_agent = None
         self.context = {}
         
