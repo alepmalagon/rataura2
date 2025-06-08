@@ -1,4 +1,0 @@
-"""
-Livekit agent module.
-"""
-
