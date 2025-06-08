@@ -14,6 +14,7 @@ from pydantic import BaseModel as PydanticBaseModel, Field, validator
 
 from business_rules.engine import run_all
 from business_rules.actions import BaseActions, rule_action
+from business_rules.fields import FIELD_NUMERIC, FIELD_TEXT, FIELD_NO_INPUT
 from business_rules.variables import (
     BaseVariables, 
     string_rule_variable,
@@ -207,7 +208,7 @@ class TransitionActions(BaseActions):
         """
         self.transition_controller = transition_controller
     
-    @rule_action(params={"agent_id": int})
+    @rule_action(params={"agent_id": FIELD_NUMERIC})
     def transition_to_agent(self, agent_id: int):
         """
         Transition to a specific agent.
@@ -217,7 +218,7 @@ class TransitionActions(BaseActions):
         """
         self.transition_controller.set_next_agent_id(agent_id)
     
-    @rule_action(params={"key": str, "value": str})
+    @rule_action(params={"key": FIELD_TEXT, "value": FIELD_TEXT})
     def set_context_value(self, key: str, value: str):
         """
         Set a value in the context.
@@ -316,11 +317,15 @@ class TransitionController:
             
             rules = rules_map[transition.id]
             
+            # Create instances of variables and actions
+            variables = ConversationVariables(context)
+            actions = TransitionActions(self)
+            
             # Run the rules
             run_all(
                 rule_list=rules,
-                variables=ConversationVariables(context),
-                actions=TransitionActions(self),
+                defined_variables=variables,
+                defined_actions=actions,
                 stop_on_first_trigger=True
             )
             
@@ -423,4 +428,3 @@ def delete_business_rules_transition(
     db.commit()
     
     return True
-

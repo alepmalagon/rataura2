@@ -1,4 +1,0 @@
-"""
-Graph management module.
-"""
-

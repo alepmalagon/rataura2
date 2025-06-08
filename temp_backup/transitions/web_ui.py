@@ -78,23 +78,24 @@ def get_actions_info() -> Dict[str, Any]:
         if hasattr(attr, 'params'):
             # This is a rule action
             params = []
-            for param_name, param_type in attr.params.items():
-                param_info = {
-                    'name': param_name,
-                    'label': param_name.replace('_', ' ').title(),
-                }
-                
-                # Map Python types to Business Rules field types
-                if param_type == int:
-                    param_info['field_type'] = 'numeric'
-                elif param_type == bool:
-                    param_info['field_type'] = 'boolean'
-                elif param_type == str:
-                    param_info['field_type'] = 'string'
-                else:
-                    param_info['field_type'] = 'string'
-                
-                params.append(param_info)
+            
+            # Handle both dict and list formats for params
+            if isinstance(attr.params, list):
+                for param in attr.params:
+                    params.append({
+                        'name': param['name'],
+                        'label': param['name'].replace('_', ' ').title(),
+                        'field_type': param['fieldType'],
+                    })
+            else:
+                # For backward compatibility
+                for param_name, param_type in attr.params.items():
+                    param_info = {
+                        'name': param_name,
+                        'label': param_name.replace('_', ' ').title(),
+                        'field_type': param_type,
+                    }
+                    params.append(param_info)
             
             actions.append({
                 'name': attr_name,
@@ -177,4 +178,3 @@ def json_to_rules(json_str: str) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: Rules definition
     """
     return json.loads(json_str)
-
