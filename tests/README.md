@@ -11,6 +11,7 @@ The test suite is designed to validate the functionality of various components o
 Tests are organized by component, with each test file focusing on a specific module or functionality:
 
 - `test_business_rules.py`: Tests for the Business Rules transitions module, which handles agent transitions based on configurable rules.
+- `__init__.py`: Makes the tests directory a proper Python package, which is required for unittest discovery to work correctly.
 
 ## Running Tests
 
@@ -128,5 +129,18 @@ If you encounter issues with the tests:
 3. Verify that the test database is being created correctly
 4. Look for any changes in the API or component interfaces that might affect the tests
 
-For more complex issues, please open an issue in the repository with details about the problem and any error messages.
+### Common Errors
 
+#### ImportError: Start directory is not importable
+
+If you see this error:
+```
+ImportError: Start directory is not importable: 'tests'
+```
+
+This means that the `tests` directory is not recognized as a Python package. Make sure:
+- The `tests` directory contains an `__init__.py` file
+- You're running the command from the project root directory
+- The directory structure is correct
+
+For more complex issues, please open an issue in the repository with details about the problem and any error messages.
