@@ -249,6 +249,36 @@ class AgentGraphManager:
             # For security reasons, we're not executing arbitrary code here
             # In a real implementation, this would use a safe evaluation mechanism
             return False
+            
+        elif condition_type == "livekit_event":
+            # Check if a specific Livekit event has occurred
+            event_name = condition_data.get("event_name")
+            if not event_name or "events" not in context:
+                return False
+                
+            events = context.get("events", [])
+            for event in events:
+                # Check if this is a Livekit event with the right name
+                if event.get("source") == "livekit" and event.get("type") == event_name:
+                    # If there are additional conditions, check those too
+                    if "event_data" in condition_data:
+                        event_data_conditions = condition_data.get("event_data", {})
+                        event_data = event.get("data", {})
+                        
+                        # Check if all conditions match
+                        match = True
+                        for key, value in event_data_conditions.items():
+                            if key not in event_data or event_data[key] != value:
+                                match = False
+                                break
+                        
+                        if match:
+                            return True
+                    else:
+                        # No additional conditions, just match the event name
+                        return True
+            
+            return False
         
         return False
     
@@ -388,4 +418,3 @@ class AgentGraphManager:
             )
         
         return manager
-
