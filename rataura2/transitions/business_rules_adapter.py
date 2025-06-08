@@ -21,9 +21,10 @@ from business_rules.variables import (
     boolean_rule_variable,
     select_rule_variable,
 )
+from business_rules.fields import FIELD_NUMERIC, FIELD_TEXT
 
-from rataura2.db.models.base import BaseModel
-from rataura2.db.models.agent import Transition, Agent, Tool
+from rataura2.rataura2.db.models.base import BaseModel
+from rataura2.rataura2.db.models.agent import Transition, Agent, Tool
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +208,7 @@ class TransitionActions(BaseActions):
         """
         self.transition_controller = transition_controller
     
-    @rule_action(params={"agent_id": int})
+    @rule_action(params={"agent_id": FIELD_NUMERIC})
     def transition_to_agent(self, agent_id: int):
         """
         Transition to a specific agent.
@@ -217,7 +218,7 @@ class TransitionActions(BaseActions):
         """
         self.transition_controller.set_next_agent_id(agent_id)
     
-    @rule_action(params={"key": str, "value": str})
+    @rule_action(params={"key": FIELD_TEXT, "value": FIELD_TEXT})
     def set_context_value(self, key: str, value: str):
         """
         Set a value in the context.
@@ -319,8 +320,8 @@ class TransitionController:
             # Run the rules
             run_all(
                 rule_list=rules,
-                variables=ConversationVariables(context),
-                actions=TransitionActions(self),
+                defined_variables=ConversationVariables(context),
+                defined_actions=TransitionActions(self),
                 stop_on_first_trigger=True
             )
             

@@ -6,7 +6,7 @@ This module provides API functions for managing Business Rules transitions.
 from typing import Dict, List, Any, Optional
 from sqlalchemy.orm import Session
 
-from rataura2.db.models.agent import Transition, Agent
+from rataura2.rataura2.db.models.agent import Transition, Agent
 from rataura2.transitions.business_rules_adapter import (
     BusinessRulesTransition,
     create_business_rules_transition,

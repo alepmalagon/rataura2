@@ -13,8 +13,9 @@ sys.path.append(str(Path(__file__).parent.parent))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from rataura2.db.models.base import Base
-from rataura2.db.models.agent import Agent, Transition, AgentType, LLMProvider
+# Import directly from the files to avoid circular imports
+from rataura2.rataura2.db.models.base import Base
+from rataura2.rataura2.db.models.agent import Agent, Transition, AgentType, LLMProvider
 from rataura2.transitions.business_rules_adapter import (
     BusinessRulesTransition,
     create_business_rules_transition,
@@ -293,3 +294,4 @@ class TestBusinessRulesTransitions(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
