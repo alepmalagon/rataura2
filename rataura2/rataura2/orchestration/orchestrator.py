@@ -144,6 +144,32 @@ class AgentOrchestrator:
             agent_handler.register_callback(
                 EventType.AGENT_MESSAGE, self._check_transition_after_event
             )
+            
+            # Register callbacks for Livekit events
+            agent_handler.register_callback(
+                EventType.SESSION_CREATED, self._check_transition_after_event
+            )
+            agent_handler.register_callback(
+                EventType.SESSION_ENDED, self._check_transition_after_event
+            )
+            agent_handler.register_callback(
+                EventType.USER_JOINED, self._check_transition_after_event
+            )
+            agent_handler.register_callback(
+                EventType.USER_LEFT, self._check_transition_after_event
+            )
+            agent_handler.register_callback(
+                EventType.AGENT_STARTED, self._check_transition_after_event
+            )
+            agent_handler.register_callback(
+                EventType.AGENT_STOPPED, self._check_transition_after_event
+            )
+            agent_handler.register_callback(
+                EventType.AGENT_ERROR, self._check_transition_after_event
+            )
+            agent_handler.register_callback(
+                EventType.TOOL_CALLED, self._check_transition_after_event
+            )
     
     def _check_transition_after_event(self, event: EventData, context: Dict[str, Any]) -> None:
         """
@@ -496,5 +522,3 @@ class SessionManager:
             # End all sessions
             for session_id in list(self.orchestrators.keys()):
                 self.end_session(session_id)
-"""
-
