@@ -1,7 +1,7 @@
 """
 Base models for SQLAlchemy ORM.
 """
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Any, Dict, Optional
 
 from sqlalchemy import Column, DateTime, Integer
@@ -23,14 +23,14 @@ class TimestampMixin:
     
     created_at: Mapped[datetime] = mapped_column(
         DateTime, 
-        default=datetime.utcnow, 
+        default=lambda: datetime.now(UTC), 
         nullable=False
     )
     
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, 
-        default=datetime.utcnow, 
-        onupdate=datetime.utcnow, 
+        default=lambda: datetime.now(UTC), 
+        onupdate=lambda: datetime.now(UTC), 
         nullable=False
     )
 
@@ -43,13 +43,13 @@ class BaseModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, 
-        default=datetime.utcnow, 
+        default=lambda: datetime.now(UTC), 
         nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, 
-        default=datetime.utcnow, 
-        onupdate=datetime.utcnow, 
+        default=lambda: datetime.now(UTC), 
+        onupdate=lambda: datetime.now(UTC), 
         nullable=False
     )
 
