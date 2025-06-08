@@ -1,20 +1,21 @@
 """
 Database models for the application.
 """
-from rataura2.db.models.base import Base, BaseModel, TimestampMixin
-from rataura2.db.models.agent import (
+# Import directly from relative paths to avoid circular imports
+from .base import Base, BaseModel, TimestampMixin
+from .agent import (
     Agent, 
     AgentType,
     Tool, 
     Transition,
     TransitionConditionType,
-    Conversation,
+    MetaAgent,
     LLMProvider,
     STTProvider,
     TTSProvider,
     AgentSchema,
     ToolSchema,
     TransitionSchema,
-    ConversationSchema,
+    MetaAgentSchema,
 )
 

@@ -7,6 +7,8 @@ with our web interface.
 from typing import Dict, List, Any, Optional
 import json
 
+from business_rules.fields import FIELD_NUMERIC, FIELD_TEXT, FIELD_SELECT, FIELD_NO_INPUT
+
 from rataura2.transitions.business_rules_adapter import (
     ConversationVariables,
     TransitionActions,
@@ -78,27 +80,32 @@ def get_actions_info() -> Dict[str, Any]:
         if hasattr(attr, 'params'):
             # This is a rule action
             params = []
-            for param_name, param_type in attr.params.items():
+            
+            # In business-rules 1.1.1, params is a list of dicts with name, label, fieldType
+            for param in attr.params:
                 param_info = {
-                    'name': param_name,
-                    'label': param_name.replace('_', ' ').title(),
+                    'name': param['name'],
+                    'label': param['label'],
                 }
                 
-                # Map Python types to Business Rules field types
-                if param_type == int:
+                # Map field types to Business Rules field types
+                field_type = param['fieldType']
+                if field_type == FIELD_NUMERIC:
                     param_info['field_type'] = 'numeric'
-                elif param_type == bool:
-                    param_info['field_type'] = 'boolean'
-                elif param_type == str:
-                    param_info['field_type'] = 'string'
+                elif field_type == FIELD_TEXT:
+                    param_info['field_type'] = 'text'
+                elif field_type == FIELD_SELECT:
+                    param_info['field_type'] = 'select'
+                elif field_type == FIELD_NO_INPUT:
+                    param_info['field_type'] = 'none'
                 else:
-                    param_info['field_type'] = 'string'
+                    param_info['field_type'] = 'text'
                 
                 params.append(param_info)
             
             actions.append({
                 'name': attr_name,
-                'label': attr_name.replace('_', ' ').title(),
+                'label': attr.label,
                 'params': params,
             })
     

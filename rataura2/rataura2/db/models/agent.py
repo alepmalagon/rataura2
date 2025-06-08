@@ -9,7 +9,7 @@ from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Text, JSON,
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from pydantic import BaseModel as PydanticBaseModel, Field, validator
 
-from rataura2.db.models.base import BaseModel
+from .base import BaseModel
 
 
 class AgentType(str, Enum):
