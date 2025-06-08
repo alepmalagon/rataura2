@@ -54,7 +54,7 @@ class BusinessRulesTransitionSchema(PydanticBaseModel):
     rules_definition: Dict[str, Any]
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ConversationVariables(BaseVariables):

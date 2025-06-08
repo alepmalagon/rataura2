@@ -9,7 +9,7 @@ from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Text, JSON,
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from pydantic import BaseModel as PydanticBaseModel, Field, validator
 
-from rataura2.db.models.base import BaseModel
+from rataura2.rataura2.db.models.base import BaseModel
 
 
 class AgentType(str, Enum):
@@ -121,10 +121,10 @@ class Agent(BaseModel):
         back_populates="target_agent"
     )
     
-    # Relationship to Conversation
-    conversations: Mapped[List["Conversation"]] = relationship(
-        "Conversation",
-        secondary="conversation_agent_association",
+    # Relationship to MetaAgent
+    meta_agents: Mapped[List["MetaAgent"]] = relationship(
+        "MetaAgent",
+        secondary="meta_agent_agent_association",
         back_populates="agents"
     )
 
@@ -172,23 +172,23 @@ class Transition(BaseModel):
     )
 
 
-# Association table for many-to-many relationship between Conversation and Agent
-conversation_agent_association = Table(
-    "conversation_agent_association",
+# Association table for many-to-many relationship between MetaAgent and Agent
+meta_agent_agent_association = Table(
+    "meta_agent_agent_association",
     BaseModel.metadata,
-    Column("conversation_id", Integer, ForeignKey("Conversation.id"), primary_key=True),
+    Column("meta_agent_id", Integer, ForeignKey("MetaAgent.id"), primary_key=True),
     Column("agent_id", Integer, ForeignKey("Agent.id"), primary_key=True)
 )
 
 
-class Conversation(BaseModel):
+class MetaAgent(BaseModel):
     """
-    Model for a conversation that represents a collection of agents connected by transitions.
+    Model for a meta-agent that represents a collection of agents connected by transitions.
     This is the agent experienced from the user's perspective when simple agents are cycled
     using directed graphs.
     """
     
-    __tablename__ = "Conversation"
+    __tablename__ = "MetaAgent"
     
     name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
@@ -203,8 +203,8 @@ class Conversation(BaseModel):
     
     agents: Mapped[List[Agent]] = relationship(
         "Agent",
-        secondary=conversation_agent_association,
-        back_populates="conversations"
+        secondary=meta_agent_agent_association,
+        back_populates="meta_agents"
     )
 
 
@@ -221,7 +221,7 @@ class ToolSchema(PydanticBaseModel):
     is_active: bool = True
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TransitionSchema(PydanticBaseModel):
@@ -237,7 +237,7 @@ class TransitionSchema(PydanticBaseModel):
     tool_id: Optional[int] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
         
     @validator('condition_type')
     def validate_condition_type(cls, v):
@@ -263,7 +263,7 @@ class AgentSchema(PydanticBaseModel):
     tools: Optional[List[ToolSchema]] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
         
     @validator('agent_type')
     def validate_agent_type(cls, v):
@@ -290,8 +290,8 @@ class AgentSchema(PydanticBaseModel):
         return v
 
 
-class ConversationSchema(PydanticBaseModel):
-    """Pydantic model for Conversation validation and serialization."""
+class MetaAgentSchema(PydanticBaseModel):
+    """Pydantic model for MetaAgent validation and serialization."""
     
     id: Optional[int] = None
     name: str
@@ -302,5 +302,5 @@ class ConversationSchema(PydanticBaseModel):
     agents: Optional[List[AgentSchema]] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
