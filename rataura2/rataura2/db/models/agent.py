@@ -221,7 +221,7 @@ class ToolSchema(PydanticBaseModel):
     is_active: bool = True
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TransitionSchema(PydanticBaseModel):
@@ -237,7 +237,7 @@ class TransitionSchema(PydanticBaseModel):
     tool_id: Optional[int] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
         
     @validator('condition_type')
     def validate_condition_type(cls, v):
@@ -263,7 +263,7 @@ class AgentSchema(PydanticBaseModel):
     tools: Optional[List[ToolSchema]] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
         
     @validator('agent_type')
     def validate_agent_type(cls, v):
@@ -302,5 +302,5 @@ class MetaAgentSchema(PydanticBaseModel):
     agents: Optional[List[AgentSchema]] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
