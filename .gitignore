@@ -7939,3 +7939,4 @@ venv/lib/python3.10/site-packages/uvicorn-0.34.3.dist-info/REQUESTED
 venv/lib/python3.10/site-packages/uvicorn-0.34.3.dist-info/WHEEL
 venv/lib/python3.10/site-packages/uvicorn-0.34.3.dist-info/licenses/LICENSE.md
 venv/share/man/man1/ttx.1
+tests/__pycache__/test_simple.cpython-310.pyc
